@@ -22,22 +22,11 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-import spack.modules
-import llnl.util.tty as tty
-
-try:
-    enabled = spack.modules.common.configuration['enable']
-except KeyError:
-    tty.debug('NO MODULE WRITTEN: list of enabled module files is empty')
-    enabled = []
 
 
-def _for_each_enabled(spec, method_name):
-    """Calls a method for each enabled module"""
-    for name in enabled:
-        generator = spack.modules.module_types[name](spec)
-        getattr(generator, method_name)()
+class ContextClass(object):
 
+    fields = []
 
-post_install = lambda spec: _for_each_enabled(spec, 'write')
-post_uninstall = lambda spec: _for_each_enabled(spec, 'remove')
+    def as_dict(self):
+        return dict([(name, getattr(self, name)) for name in self.fields])

@@ -22,22 +22,23 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-import spack.modules
-import llnl.util.tty as tty
+"""This package contains code for creating environment modules, which can
+include dotkits, TCL non-hierarchical modules, LUA hierarchical modules, and
+others.
+"""
 
-try:
-    enabled = spack.modules.common.configuration['enable']
-except KeyError:
-    tty.debug('NO MODULE WRITTEN: list of enabled module files is empty')
-    enabled = []
+from dotkit import DotkitModulefileWriter
+from tcl import TclModulefileWriter
+from lmod import LmodModulefileWriter
 
+__all__ = [
+    'DotkitModulefileWriter',
+    'TclModulefileWriter',
+    'LmodModulefileWriter'
+]
 
-def _for_each_enabled(spec, method_name):
-    """Calls a method for each enabled module"""
-    for name in enabled:
-        generator = spack.modules.module_types[name](spec)
-        getattr(generator, method_name)()
-
-
-post_install = lambda spec: _for_each_enabled(spec, 'write')
-post_uninstall = lambda spec: _for_each_enabled(spec, 'remove')
+module_types = {
+    'dotkit': DotkitModulefileWriter,
+    'tcl': TclModulefileWriter,
+    'lmod': LmodModulefileWriter
+}

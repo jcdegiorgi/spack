@@ -22,22 +22,38 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-import spack.modules
-import llnl.util.tty as tty
 
-try:
-    enabled = spack.modules.common.configuration['enable']
-except KeyError:
-    tty.debug('NO MODULE WRITTEN: list of enabled module files is empty')
-    enabled = []
+import os.path
+
+import jinja2
+import spack
+
+import context
+import textwrap
+
+TemplateNotFound = jinja2.TemplateNotFound
+ContextClass = context.ContextClass
+# FIXME: the template loader should be part of spack init
+# FIXME: and template resources should be listed in
+# FIXME: the main config file
+env = jinja2.Environment(
+    loader=jinja2.FileSystemLoader([
+        os.path.join(spack.spack_root, 'templates')
+    ]),
+    trim_blocks=True
+)
 
 
-def _for_each_enabled(spec, method_name):
-    """Calls a method for each enabled module"""
-    for name in enabled:
-        generator = spack.modules.module_types[name](spec)
-        getattr(generator, method_name)()
+# FIXME: check where to put the code below
+def prepend_to_line(text, token):
+    return [token + line for line in text]
 
 
-post_install = lambda spec: _for_each_enabled(spec, 'write')
-post_uninstall = lambda spec: _for_each_enabled(spec, 'remove')
+def quote(text):
+    return ['"{0}"'.format(line) for line in text]
+
+
+env.filters['textwrap'] = textwrap.wrap
+env.filters['prepend_to_line'] = prepend_to_line
+env.filters['join'] = '\n'.join
+env.filters['quote'] = quote
