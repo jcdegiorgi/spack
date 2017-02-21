@@ -156,12 +156,7 @@ def merge_config_rules(configuration, spec):
                 spec_configuration = {}
             update_dictionary_extending_lists(spec_configuration, action)
 
-    # Attach options that are spec-independent to the spec-specific
-    # configuration
-
-    # Hash length in module files
-    hash_length = module_specific_configuration.get('hash_length', 7)
-    spec_configuration['hash_length'] = hash_length
+    # Transform keywords for dependencies or prerequisites into a list of spec
 
     # Which modulefiles we want to autoload
     autoload_strategy = spec_configuration.get('autoload', 'none')
@@ -171,6 +166,16 @@ def merge_config_rules(configuration, spec):
     prerequisite_strategy = spec_configuration.get('prerequisites', 'none')
     l = dependencies(spec, prerequisite_strategy)
     spec_configuration['prerequisites'] = l
+
+    # Attach options that are spec-independent to the spec-specific
+    # configuration
+
+    # Hash length in module files
+    hash_length = module_specific_configuration.get('hash_length', 7)
+    spec_configuration['hash_length'] = hash_length
+
+    verbose = module_specific_configuration.get('verbose', False)
+    spec_configuration['verbose'] = verbose
 
     return spec_configuration
 
