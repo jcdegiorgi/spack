@@ -386,8 +386,8 @@ class BaseFileLayout(object):
         return os.path.join(self.dirname(), arch_folder, filename)
 
 
-class BaseContext(tengine.ContextClass):
-    """Provides the context needed for template rendering.
+class BaseContext(tengine.Context):
+    """Provides the base context needed for template rendering.
 
     This class needs to be sub-classed for specific module types. The
     following attributes need to be implemented:
@@ -396,24 +396,22 @@ class BaseContext(tengine.ContextClass):
 
     """
 
-    # FIXME: check autoload_warning
-
     def __init__(self, configuration):
         self.conf = configuration
 
-    @property
+    @tengine.context_property
     def spec(self):
         return self.conf.spec
 
-    @property
+    @tengine.context_property
     def timestamp(self):
         return datetime.datetime.now()
 
-    @property
+    @tengine.context_property
     def category(self):
         return getattr(self.spec, 'category', 'spack')
 
-    @property
+    @tengine.context_property
     def short_description(self):
         # short description default is just the package + version
         # packages can provide this optional attribute
@@ -421,14 +419,14 @@ class BaseContext(tengine.ContextClass):
             self.spec.package, 'short_description', self.spec.format("$_ $@")
         )
 
-    @property
+    @tengine.context_property
     def long_description(self):
         # long description is the docstring with reduced whitespace.
         if self.spec.package.__doc__:
             return re.sub(r'\s+', ' ', self.spec.package.__doc__)
         return None
 
-    @property
+    @tengine.context_property
     def environment_modifications(self):
         """List of environment modifications to be processed."""
         # Modifications guessed inspecting the spec prefix
@@ -481,7 +479,7 @@ class BaseContext(tengine.ContextClass):
 
         return [(type(x).__name__, x) for x in env if x.name not in blacklist]
 
-    @property
+    @tengine.context_property
     def autoload(self):
         """List of modules that needs to be loaded automatically."""
         # From 'autoload' configuration option
@@ -495,7 +493,7 @@ class BaseContext(tengine.ContextClass):
         l = getattr(self.conf, what)
         return [m.make_layout(x).use_name for x in l]
 
-    @property
+    @tengine.context_property
     def verbose(self):
         """Verbosity level."""
         return self.conf.verbose
@@ -586,7 +584,7 @@ class BaseModuleFileWriter(object):
             raise ModulesTemplateNotFoundError(msg)
 
         # Render the template
-        text = template.render(self.context.as_dict())
+        text = template.render(self.context.to_dict())
         # Write it to file
         with open(self.layout.filename, 'w') as f:
             f.write(text)
