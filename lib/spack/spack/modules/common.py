@@ -302,6 +302,10 @@ class BaseConfiguration(object):
         return False
 
     @property
+    def context(self):
+        return self.conf.get('context', {})
+
+    @property
     def specs_to_load(self):
         """List of specs that should be loaded in the module file."""
         return self._create_list_for('autoload')
@@ -502,14 +506,17 @@ class BaseContext(tengine.Context):
 class BaseModuleFileWriter(object):
     def __init__(self, spec):
         self.spec = spec
-        # This class is meant to be derives. Get the module of the
+
+        # This class is meant to be derived. Get the module of the
         # actual writer.
         self.module = inspect.getmodule(self)
         m = self.module
+
         # Create the triplet of configuration/layout/context
         self.conf = m.make_configuration(spec)
         self.layout = m.make_layout(spec)
         self.context = m.make_context(spec)
+
         # Check if a default template has been defined,
         # throw if not found
         try:
@@ -583,8 +590,25 @@ class BaseModuleFileWriter(object):
             msg = msg.format(template_name, name)
             raise ModulesTemplateNotFoundError(msg)
 
+        # Construct the context following the usual hierarchy of updates:
+        # 1. start with the default context from the module writer class
+        # 2. update with package specific context
+        # 3. update with 'modules.yaml' specific context
+
+        context = self.context.to_dict()
+
+        # Attribute from package
+        module_name = str(self.module.__name__).split('.')[-1]
+        attr_name = '{0}_context'.format(module_name)
+        pkg_update = getattr(self.spec.package, attr_name, {})
+        context.update(pkg_update)
+
+        # Context key in modules.yaml
+        conf_update = self.conf.context
+        context.update(conf_update)
+
         # Render the template
-        text = template.render(self.context.to_dict())
+        text = template.render(context)
         # Write it to file
         with open(self.layout.filename, 'w') as f:
             f.write(text)
