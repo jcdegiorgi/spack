@@ -26,6 +26,10 @@ from spack import *
 
 
 class OverrideContextTemplates(Package):
+    """This package updates the context for TCL modulefiles.
+
+    And additional lines that shouldn't be in the short description.
+    """
     homepage = "http://www.fake-spack-example.org"
     url      = "http://www.fake-spack-example.org/downloads/fake-1.0.tar.gz"
 

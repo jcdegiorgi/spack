@@ -417,11 +417,13 @@ class BaseContext(tengine.Context):
 
     @tengine.context_property
     def short_description(self):
-        # short description default is just the package + version
-        # packages can provide this optional attribute
-        return getattr(
-            self.spec.package, 'short_description', self.spec.format("$_ $@")
-        )
+        # If we have a valid docstring return the first paragraph.
+        docstring = type(self.spec.package).__doc__
+        if docstring:
+            value = docstring.split('\n\n')[0]
+            return re.sub(r'\s+', ' ', value)
+        # Otherwise the short description is just the package + version
+        return self.spec.format("$_ $@")
 
     @tengine.context_property
     def long_description(self):
