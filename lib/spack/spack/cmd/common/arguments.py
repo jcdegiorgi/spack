@@ -81,7 +81,7 @@ _arguments['constraint'] = Args(
 _arguments['module_type'] = Args(
     '-m', '--module-type',
     choices=spack.modules.module_types.keys(),
-    default=list(spack.modules.module_types.keys())[0],
+    action='append',
     help='type of module files [default: %(default)s]')
 
 _arguments['yes_to_all'] = Args(
