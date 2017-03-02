@@ -87,11 +87,24 @@ class LmodConfiguration(common.BaseConfiguration):
         """Returns the list of tokens that are part of the modulefile
         hierarchy. 'compiler' is always present.
         """
-        # TODO : Check that the extra hierarchy tokens specified in the
-        # TODO : configuration file are actually virtual dependencies
-        #
-        # TODO : dedupe the list and warn for duplicated dependencies
-        return configuration.get('hierarchy', []) + ['compiler']
+        tokens = configuration.get('hierarchy', [])
+
+        # Check if all the tokens in the hierarchy are virtual specs.
+        # If not warn the user and raise an error.
+        not_virtual = [t for t in tokens if not spack.spec.Spec.is_virtual(t)]
+        if not_virtual:
+            msg = "Non-virtual specs in 'hierarchy' list for lmod: {0}\n"
+            msg += "Please check the 'modules.yaml' configuration files"
+            msg.format(', '.join(not_virtual))
+            raise NonVirtualInHierarchyError(msg)
+
+        # Append 'compiler' which is always implied
+        tokens.append('compiler')
+
+        # Deduplicate tokens in case duplicates have been coded
+        tokens = list(lang.dedupe(tokens))
+
+        return tokens
 
     @property
     def requires(self):
@@ -378,8 +391,14 @@ class LmodModulefileWriter(common.BaseModuleFileWriter):
     default_template = os.path.join('modules', 'modulefile.lua')
 
 
-class CoreCompilersNotFoundError(KeyError, spack.error.SpackError):
+class CoreCompilersNotFoundError(spack.error.SpackError, KeyError):
     """Error raised if the key 'core_compilers' has not been specified
     in the configuration file.
     """
     pass
+
+
+class NonVirtualInHierarchyError(spack.error.SpackError, TypeError):
+    """Error raised if non-virtual specs are used as hierarchy tokens in
+    the lmod section of 'modules.yaml'.
+    """
