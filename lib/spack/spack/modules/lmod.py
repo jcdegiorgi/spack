@@ -32,10 +32,11 @@ import itertools
 import collections
 import spack.tengine as tengine
 
-from . import common
+from .common import BaseConfiguration, BaseFileLayout
+from .common import BaseContext, BaseModuleFileWriter, configuration
 
 #: LMOD specific part of the configuration
-configuration = common.configuration.get('lmod', {})
+configuration = configuration.get('lmod', {})
 
 #: Caches the configuration {spec_hash: configuration}
 configuration_registry = {}
@@ -62,7 +63,7 @@ def make_context(spec):
     return LmodContext(conf)
 
 
-class LmodConfiguration(common.BaseConfiguration):
+class LmodConfiguration(BaseConfiguration):
     """Configuration class for lmod module files."""
 
     @property
@@ -164,7 +165,7 @@ class LmodConfiguration(common.BaseConfiguration):
         return [x for x in self.hierarchy_tokens if x not in self.available]
 
 
-class LmodFileLayout(common.BaseFileLayout):
+class LmodFileLayout(BaseFileLayout):
     """File layout for lmod module files."""
 
     #: file extension of lua module files
@@ -315,7 +316,7 @@ class LmodFileLayout(common.BaseFileLayout):
         return unlocked
 
 
-class LmodContext(common.BaseContext):
+class LmodContext(BaseContext):
     """Context class for lmod module files."""
 
     @tengine.context_property
@@ -386,7 +387,7 @@ class LmodContext(common.BaseContext):
         return value
 
 
-class LmodModulefileWriter(common.BaseModuleFileWriter):
+class LmodModulefileWriter(BaseModuleFileWriter):
     """Writer class for lmod module files."""
     default_template = os.path.join('modules', 'modulefile.lua')
 

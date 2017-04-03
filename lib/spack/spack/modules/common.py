@@ -53,6 +53,7 @@ import inspect
 import os.path
 import re
 
+import six
 import llnl.util.filesystem
 import llnl.util.tty as tty
 import spack
@@ -229,7 +230,7 @@ class BaseConfiguration(object):
                 for x in arglist:
                     yield (x,)
             else:
-                for x in arglist.iteritems():
+                for x in six.iteritems(arglist):
                     yield x
 
         for method, arglist in actions.items():
@@ -559,7 +560,7 @@ class BaseModuleFileWriter(object):
             self.default_template  # This is always defined at this point
         ]
         # Filter out false-ish values
-        choices = filter(lambda x: bool(x), choices)
+        choices = list(filter(lambda x: bool(x), choices))
         # ... and return the first match
         return choices.pop(0)
 
