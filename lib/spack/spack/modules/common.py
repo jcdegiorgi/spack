@@ -196,11 +196,6 @@ class BaseConfiguration(object):
     querying easier. It needs to be sub-classed for specific module types.
     """
 
-    #: naming scheme suitable for non-hierarchical layouts
-    naming_scheme = configuration.get(
-        'naming_scheme', '${PACKAGE}-${VERSION}-${COMPILERNAME}-${COMPILERVER}'
-    )
-
     def __init__(self, spec):
         # Module where type(self) is defined
         self.module = inspect.getmodule(self)
@@ -209,6 +204,15 @@ class BaseConfiguration(object):
         # Dictionary of configuration options that should be applied
         # to the spec
         self.conf = merge_config_rules(self.module.configuration, self.spec)
+
+    @property
+    def naming_scheme(self):
+        """Naming scheme suitable for non-hierarchical layouts"""
+        scheme = self.module.configuration.get(
+            'naming_scheme',
+            '${PACKAGE}-${VERSION}-${COMPILERNAME}-${COMPILERVER}'
+        )
+        return scheme
 
     @property
     def template(self):

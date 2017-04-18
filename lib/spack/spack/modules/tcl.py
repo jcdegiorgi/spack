@@ -74,9 +74,6 @@ class TclConfiguration(BaseConfiguration):
 class TclFileLayout(BaseFileLayout):
     """File layout for tcl module files."""
 
-    #: file extension for tcl module files
-    extension = 'tcl'
-
 
 class TclContext(BaseContext):
     """Context class for tcl module files."""
