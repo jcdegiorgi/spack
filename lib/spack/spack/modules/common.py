@@ -426,7 +426,12 @@ class BaseContext(tengine.Context):
         docstring = type(self.spec.package).__doc__
         if docstring:
             value = docstring.split('\n\n')[0]
-            return re.sub(r'\s+', ' ', value)
+            # Transform tabs and friends into spaces
+            value = re.sub(r'\s+', ' ', value)
+            # Turn double quotes into single quotes (double quotes are needed
+            # to start and end strings)
+            value = re.sub(r'"', "'", value)
+            return value
         # Otherwise the short description is just the package + version
         return self.spec.format("$_ $@")
 

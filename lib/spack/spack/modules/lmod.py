@@ -172,6 +172,15 @@ class LmodFileLayout(BaseFileLayout):
     extension = 'lua'
 
     @property
+    def arch_dirname(self):
+        """Returns the root folder for THIS architecture"""
+        arch_folder = str(self.spec.architecture)
+        return os.path.join(
+            self.dirname(),  # root for lmod module files
+            arch_folder,  # architecture relative path
+        )
+
+    @property
     def filename(self):
         """Returns the filename for the current module file"""
 
@@ -187,7 +196,7 @@ class LmodFileLayout(BaseFileLayout):
 
         # Compute the absolute path
         fullname = os.path.join(
-            self.dirname(),  # root for lmod module files
+            self.arch_dirname,  # root for lmod files on this architecture
             hierarchy_name,  # relative path
             '.'.join([self.use_name, self.extension])  # file name
         )
@@ -285,7 +294,7 @@ class LmodFileLayout(BaseFileLayout):
             l = [x for x in hierarchy if x in item]
             available_combination.append(tuple(l))
             parts = [self.token_to_path(x, available[x]) for x in l]
-            unlocked[None].append(tuple([self.dirname()] + parts))
+            unlocked[None].append(tuple([self.arch_dirname] + parts))
 
         # Deduplicate the list
         unlocked[None] = list(lang.dedupe(unlocked[None]))
@@ -310,7 +319,7 @@ class LmodFileLayout(BaseFileLayout):
                 for x in l:
                     value = token2path(x) if x in available else x
                     parts.append(value)
-                unlocked[m].append(tuple([self.dirname()] + parts))
+                unlocked[m].append(tuple([self.arch_dirname] + parts))
             # Deduplicate the list
             unlocked[m] = list(lang.dedupe(unlocked[m]))
         return unlocked
