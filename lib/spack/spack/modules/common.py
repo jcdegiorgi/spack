@@ -38,7 +38,7 @@ and is divided among four classes:
   * a layout class that provides the information associated with module
     file names and directories
 
-  * a context class that provides the dictionary used byt the template engine
+  * a context class that provides the dictionary used by the template engine
     to generate the module file
 
   * a writer that collects and uses the information above to either write

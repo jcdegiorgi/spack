@@ -43,7 +43,7 @@ configuration_registry = {}
 
 
 def make_configuration(spec):
-    """Returns the tcl configuration for spec"""
+    """Returns the lmod configuration for spec"""
     key = spec.dag_hash()
     try:
         return configuration_registry[key]

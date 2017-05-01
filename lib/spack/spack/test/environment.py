@@ -25,12 +25,12 @@
 import os
 
 import pytest
+import spack.environment as environment
 from spack import spack_root
 from spack.environment import EnvironmentModifications
 from spack.environment import RemovePath, PrependPath, AppendPath
 from spack.environment import SetEnv, UnsetEnv
-from spack.util.environment import filter_system_paths, filter_system_bin_paths
-import spack.environment as environment
+from spack.util.environment import filter_system_paths
 
 
 def test_inspect_path():
