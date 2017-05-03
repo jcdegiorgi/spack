@@ -23,7 +23,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
-from glob import glob
 
 import os
 
@@ -39,23 +38,24 @@ class Espresso(Package):
     url = 'http://www.qe-forge.org/gf/download/frsrelease/224/1044/qe-6.0.tar.gz'
     base_url = 'http://qe-forge.org/gf/download/frsrelease'
 
-    version(
-        '6.1.0',
-        'db398edcad76e085f8c8a3f6ecb7aaab',
-        url='http://www.qe-forge.org/gf/download/frsrelease/240/1075/qe-6.1.tar.gz'
-    )
-
-    version(
-        '5.4.0',
-        '8bb78181b39bd084ae5cb7a512c1cfe7',
-        url='http://www.qe-forge.org/gf/download/frsrelease/211/968/espresso-5.4.0.tar.gz'
-    )
+    version('6.1','db398edcad76e085f8c8a3f6ecb7aaab')
+    version('6.0', 'e42aeeffadf7951542d8561a6b4a3390')
+    version('5.4.0', '8bb78181b39bd084ae5cb7a512c1cfe7')
     version('5.3.0', '6848fcfaeb118587d6be36bd10b7f2c3')
+
+    patch('dspev_drv.patch')
+    patch('zhpev_drv.patch')
+    def url_for_version(self, version):
+        versions = {'6.1':'240/1075','6.0': '224/1044', \
+                '5.4.0': '211/968', '5.3.0': '204/912'}
+        return '%s/%s/qe-%s.tar.gz' % \
+            (Espresso.base_url, versions[str(version)], version)
 
     variant('mpi', default=True, description='Builds with mpi support')
     variant('openmp', default=False, description='Enables openMP support')
     variant('scalapack', default=True, description='Enables scalapack support')
-    variant('elpa', default=True, description='Uses elpa as an eigenvalue solver')
+    variant('elpa', default=False, description='Uses elpa as \
+                     an eigenvalue solver')
 
     depends_on('blas')
     depends_on('lapack')
@@ -78,12 +78,10 @@ class Espresso(Package):
             raise RuntimeError(error.format(variant='elpa'))
 
     def install(self, spec, prefix):
+        from glob import glob
         self.check_variants(spec)
 
-        options = [
-            '-prefix=%s' % (prefix.bin if spec.satisfies('@:5.4.0') else
-                            prefix)
-        ]
+        options = ['-prefix=%s' % prefix.bin]
 
         if '+mpi' in spec:
             options.append('--enable-parallel')
@@ -98,13 +96,15 @@ class Espresso(Package):
                 options.append('--with-scalapack=yes')
 
         if '+elpa+openmp' in spec:
-            options.append('--with-elpa-include=-I%s' % join_path(
-                spec['elpa'].prefix.include, "modules"))
+            string='elpa_openmp-'+str(spec['elpa'].version)+'/modules'
+            options.append('--with-elpa-include=%s' % join_path(
+                spec['elpa'].prefix.include, string))
             options.append('--with-elpa-lib=%s' % join_path(
                 spec['elpa'].prefix.lib, 'libelpa_openmp.a'))
         elif '+elpa'  in spec:
-            options.append('--with-elpa-include=-I%s' % join_path(
-                spec['elpa'].prefix.include, "modules"))
+            string='elpa-'+str(spec['elpa'].version)+'/modules'
+            options.append('--with-elpa-include=%s' % join_path(
+                spec['elpa'].prefix.include,string))
             options.append('--with-elpa-lib=%s' % join_path(
                 spec['elpa'].prefix.lib, 'libelpa.a'))
         if '%intel' in self.spec:
