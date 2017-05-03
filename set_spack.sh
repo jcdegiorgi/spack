@@ -1,3 +1,3 @@
 #!/bin/bash
 export EDITOR=vim
-source /scratch/scitas/nvarini/spack-espresso/share/spack/setup-env.sh
+source $HOME/spack/share/spack/setup-env.sh
