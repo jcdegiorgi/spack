@@ -54,6 +54,7 @@ class Espresso(Package):
     variant('mpi', default=True, description='Builds with mpi support')
     variant('openmp', default=False, description='Enables openMP support')
     variant('scalapack', default=True, description='Enables scalapack support')
+    variant('hdf5', default=True, description='Builds with HDF5 support')
     variant('elpa', default=False, description='Uses elpa as \
                      an eigenvalue solver')
 
@@ -61,6 +62,7 @@ class Espresso(Package):
     depends_on('lapack')
 
     depends_on('mpi', when='+mpi')
+    depends_on('hdf5', when='+hdf5')
     depends_on('fftw~mpi', when='~mpi')
     depends_on('fftw+mpi', when='+mpi')
     depends_on('elpa+openmp', when='+elpa+openmp')
@@ -107,8 +109,12 @@ class Espresso(Package):
                 spec['elpa'].prefix.include,string))
             options.append('--with-elpa-lib=%s' % join_path(
                 spec['elpa'].prefix.lib, 'libelpa.a'))
+
         if '%intel' in self.spec:
             options.append('MPIF90=mpiifort')
+
+        if '+hdf5' in spec:
+            options.append('--with-hdf5=%s'%spec['hdf5'].prefix)
 
         options.append('F90=%s' % os.environ['SPACK_FC'])
         options.append('CC=%s' % os.environ['SPACK_CC'])
