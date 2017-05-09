@@ -44,7 +44,7 @@ class Espresso(Package):
     version('5.3.0', '6848fcfaeb118587d6be36bd10b7f2c3')
 
     patch('dspev_drv.patch',when='@6.1')
-    patch('zhpev_drv.patch',wheb='@6.1')
+    patch('zhpev_drv.patch',when='@6.1')
     def url_for_version(self, version):
         versions = {'6.1':'240/1075','6.0': '224/1044', \
                 '5.4.0': '211/968', '5.3.0': '204/912'}
