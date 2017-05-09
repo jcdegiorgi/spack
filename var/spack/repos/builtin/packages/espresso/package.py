@@ -99,14 +99,22 @@ class Espresso(Package):
 
         if '+elpa+openmp' in spec:
             string='elpa_openmp-'+str(spec['elpa'].version)+'/modules'
-            options.append('--with-elpa-include=-I %s' % join_path(
-                spec['elpa'].prefix.include, string))
+            if str(self.version) == '6.1':
+                options.append('--with-elpa-include=%s' % join_path(
+                    spec['elpa'].prefix.include,string))
+            else:
+                options.append('--with-elpa-include=-I%s' % join_path(
+                    spec['elpa'].prefix.include,string))
             options.append('--with-elpa-lib=%s' % join_path(
                 spec['elpa'].prefix.lib, 'libelpa_openmp.a'))
         elif '+elpa'  in spec:
             string='elpa-'+str(spec['elpa'].version)+'/modules'
-            options.append('--with-elpa-include=-I %s' % join_path(
-                spec['elpa'].prefix.include,string))
+            if str(self.version) == '6.1':
+                options.append('--with-elpa-include=%s' % join_path(
+                    spec['elpa'].prefix.include,string))
+            else:
+                options.append('--with-elpa-include=-I%s' % join_path(
+                    spec['elpa'].prefix.include,string))
             options.append('--with-elpa-lib=%s' % join_path(
                 spec['elpa'].prefix.lib, 'libelpa.a'))
 
