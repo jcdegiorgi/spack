@@ -67,10 +67,10 @@ easy to type. Luckily, Spack has its own interface for using modules and dotkits
 Shell support
 ^^^^^^^^^^^^^
 
-To enable Spack interface for module files
-you need to source the appropriate setup file in the ``$SPACK_ROOT/share/spack``
-directory. This will activate shell support for the commands that need it.
-For ``bash`` or ``ksh`` users:
+To enable additional Spack commands for loading and unloading module files,
+and to add the correct path to ``MODULEPATH``,  you need to source the appropriate
+setup file in the ``$SPACK_ROOT/share/spack`` directory. This will activate shell
+support for the commands that need it. For ``bash`` or ``ksh`` users:
 
 .. code-block:: console
 
@@ -297,6 +297,7 @@ In general you can override or extend the default behavior by:
 
  1. overriding certain callback APIs in the Python packages
  2. writing specific rules in the ``modules.yaml`` configuration file
+ 3. writing your own templates to override or extend the defaults
 
 The former method lets a package express changes in the run-time environment
 that are needed to use the installed software properly, e.g. injecting variables
@@ -538,7 +539,7 @@ most likely via the ``+blas`` variant specification.
 .. note::
    LMod hierarchical module files
      When ``lmod`` is activated Spack will generate a set of hierarchical lua module
-     files that are understood by LMod. The hierarchy will always contains the
+     files that are understood by LMod. The hierarchy will always contain the
      two layers ``Core`` / ``Compiler`` but can be further extended to
      any of the virtual dependencies present in Spack. A case that could be useful in
      practice is for instance:
