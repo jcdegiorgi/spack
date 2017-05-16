@@ -70,16 +70,17 @@ class LmodConfiguration(BaseConfiguration):
     def core_compilers(self):
         """Returns the list of "Core" compilers
 
-        :raises CoreCompilersNotFoundError: if the key was not
-            specified in the configuration file or the sequence
-            is empty
+        Raises:
+            CoreCompilersNotFoundError: if the key was not
+                specified in the configuration file or the sequence
+                is empty
         """
         value = configuration.get('core_compilers')
         if value is None:
-            msg = '\'core_compilers\' key not found in configuration file'
+            msg = "'core_compilers' key not found in configuration file"
             raise CoreCompilersNotFoundError(msg)
         if not value:
-            msg = '\'core_compilers\' list cannot be empty'
+            msg = "'core_compilers' list cannot be empty"
             raise CoreCompilersNotFoundError(msg)
         return value
 
@@ -217,10 +218,12 @@ class LmodFileLayout(BaseFileLayout):
     def token_to_path(self, name, value):
         """Transforms a hierarchy token into the corresponding path part.
 
-        :param str name: name of the service in the hierarchy
-        :param value: actual provider of the service
-        :return: part of the path associated with the service
-        :rtype: str
+        Args:
+            name (str): name of the service in the hierarchy
+            value: actual provider of the service
+
+        Returns:
+            str: part of the path associated with the service
         """
         # General format for the path part
         path_part_fmt = os.path.join('{token.name}', '{token.version}')
@@ -261,7 +264,9 @@ class LmodFileLayout(BaseFileLayout):
     @property
     def unlocked_paths(self):
         """Returns a dictionary mapping conditions to a list of unlocked
-        paths. The paths that are unconditionally unlocked are under the
+        paths.
+
+        The paths that are unconditionally unlocked are under the
         key 'None'. The other keys represent the list of services you need
         loaded to unlock the corresponding paths.
         """
@@ -405,7 +410,6 @@ class CoreCompilersNotFoundError(spack.error.SpackError, KeyError):
     """Error raised if the key 'core_compilers' has not been specified
     in the configuration file.
     """
-    pass
 
 
 class NonVirtualInHierarchyError(spack.error.SpackError, TypeError):
