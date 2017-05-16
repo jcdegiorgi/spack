@@ -70,12 +70,6 @@ end
 {% endfor %}
 {% endblock %}
 
-{# {% block prerequisite %}
-{% for dep in prerequisite.list %}
-prereq("{{ dep.module.name }}")
-{% endfor %}
-{% endblock %} #}
-{#  #}
 {% block environment %}
 {% for command_name, cmd in environment_modifications %}
 {% if command_name == 'PrependPath' %}
